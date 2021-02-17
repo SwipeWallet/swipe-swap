@@ -1,0 +1,21 @@
+{
+  "network": "hardhat",
+  "networks": {
+      "mainnet": {
+          "infuraKey": "54fa3f8f5c074253b9d2d6defe2cc5a5",
+          "deployer": "0x7Ba1D952f4a000AC6FcFdEaA7149130d0e521e96",
+          "privateKey": "a1bb9b77afb2ac758aaf7d7e80c77d36ca79948f3563fc9e6984dfe8e2329ca0"
+      },
+      "ropsten": {
+          "infuraKey": "54fa3f8f5c074253b9d2d6defe2cc5a5",
+          "deployer": "0x7Ba1D952f4a000AC6FcFdEaA7149130d0e521e96",
+          "privateKey": "a1bb9b77afb2ac758aaf7d7e80c77d36ca79948f3563fc9e6984dfe8e2329ca0"
+      },
+      "hardhat": {
+        "infuraKey": "",
+        "deployer": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "payout": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    }
+  }
+}
