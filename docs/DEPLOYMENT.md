@@ -27,6 +27,14 @@ hardhat tenderly:push --network mainnet ContractName=Address
 ## Ropsten
 
 ```sh
+npx hardhat run --network ropsten scripts/deploy.js 
+```
+
+```sh
+npx hardhat verify --constructor-args arguments.js CONTRACT_ADDRESS
+```
+
+```sh
 yarn ropsten:deploy
 ```
 
