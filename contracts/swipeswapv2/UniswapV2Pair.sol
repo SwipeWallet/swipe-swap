@@ -1,22 +1,21 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 
 pragma solidity =0.6.12;
 
-import './SwipeswapV2ERC20.sol';
+import './UniswapV2ERC20.sol';
 import './libraries/Math.sol';
 import './libraries/UQ112x112.sol';
 import './interfaces/IERC20.sol';
-import './interfaces/ISwipeswapV2Factory.sol';
-import './interfaces/ISwipeswapV2Callee.sol';
-
+import './interfaces/IUniswapV2Factory.sol';
+import './interfaces/IUniswapV2Callee.sol';
 
 interface IMigrator {
     // Return the desired amount of liquidity token that the migrator wants.
     function desiredLiquidity() external view returns (uint256);
 }
 
-contract SwipeswapV2Pair is SwipeswapV2ERC20 {
-    using SafeMathSwipeswap  for uint;
+contract UniswapV2Pair is UniswapV2ERC20 {
+    using SafeMathUniswap  for uint;
     using UQ112x112 for uint224;
 
     uint public constant MINIMUM_LIQUIDITY = 10**3;
@@ -94,7 +93,7 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
 
     // if fee is on, mint liquidity equivalent to 1/6th of the growth in sqrt(k)
     function _mintFee(uint112 _reserve0, uint112 _reserve1) private returns (bool feeOn) {
-        address feeTo = ISwipeswapV2Factory(factory).feeTo();
+        address feeTo = IUniswapV2Factory(factory).feeTo();
         feeOn = feeTo != address(0);
         uint _kLast = kLast; // gas savings
         if (feeOn) {
@@ -116,15 +115,15 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
     // this low-level function should be called from a contract which performs important safety checks
     function mint(address to) external lock returns (uint liquidity) {
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
-        uint balance0 = IERC20Swipeswap(token0).balanceOf(address(this));
-        uint balance1 = IERC20Swipeswap(token1).balanceOf(address(this));
+        uint balance0 = IERC20Uniswap(token0).balanceOf(address(this));
+        uint balance1 = IERC20Uniswap(token1).balanceOf(address(this));
         uint amount0 = balance0.sub(_reserve0);
         uint amount1 = balance1.sub(_reserve1);
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
         uint _totalSupply = totalSupply; // gas savings, must be defined here since totalSupply can update in _mintFee
         if (_totalSupply == 0) {
-            address migrator = ISwipeswapV2Factory(factory).migrator();
+            address migrator = IUniswapV2Factory(factory).migrator();
             if (msg.sender == migrator) {
                 liquidity = IMigrator(migrator).desiredLiquidity();
                 require(liquidity > 0 && liquidity != uint256(-1), "Bad desired liquidity");
@@ -149,8 +148,8 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
         address _token0 = token0;                                // gas savings
         address _token1 = token1;                                // gas savings
-        uint balance0 = IERC20Swipeswap(_token0).balanceOf(address(this));
-        uint balance1 = IERC20Swipeswap(_token1).balanceOf(address(this));
+        uint balance0 = IERC20Uniswap(_token0).balanceOf(address(this));
+        uint balance1 = IERC20Uniswap(_token1).balanceOf(address(this));
         uint liquidity = balanceOf[address(this)];
 
         bool feeOn = _mintFee(_reserve0, _reserve1);
@@ -161,8 +160,8 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
         _burn(address(this), liquidity);
         _safeTransfer(_token0, to, amount0);
         _safeTransfer(_token1, to, amount1);
-        balance0 = IERC20Swipeswap(_token0).balanceOf(address(this));
-        balance1 = IERC20Swipeswap(_token1).balanceOf(address(this));
+        balance0 = IERC20Uniswap(_token0).balanceOf(address(this));
+        balance1 = IERC20Uniswap(_token1).balanceOf(address(this));
 
         _update(balance0, balance1, _reserve0, _reserve1);
         if (feeOn) kLast = uint(reserve0).mul(reserve1); // reserve0 and reserve1 are up-to-date
@@ -183,9 +182,9 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
         require(to != _token0 && to != _token1, 'SwipeswapV2: INVALID_TO');
         if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out); // optimistically transfer tokens
         if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out); // optimistically transfer tokens
-        if (data.length > 0) ISwipeswapV2Callee(to).swipeswapV2Call(msg.sender, amount0Out, amount1Out, data);
-        balance0 = IERC20Swipeswap(_token0).balanceOf(address(this));
-        balance1 = IERC20Swipeswap(_token1).balanceOf(address(this));
+        if (data.length > 0) IUniswapV2Callee(to).uniswapV2Call(msg.sender, amount0Out, amount1Out, data);
+        balance0 = IERC20Uniswap(_token0).balanceOf(address(this));
+        balance1 = IERC20Uniswap(_token1).balanceOf(address(this));
         }
         uint amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
@@ -204,12 +203,12 @@ contract SwipeswapV2Pair is SwipeswapV2ERC20 {
     function skim(address to) external lock {
         address _token0 = token0; // gas savings
         address _token1 = token1; // gas savings
-        _safeTransfer(_token0, to, IERC20Swipeswap(_token0).balanceOf(address(this)).sub(reserve0));
-        _safeTransfer(_token1, to, IERC20Swipeswap(_token1).balanceOf(address(this)).sub(reserve1));
+        _safeTransfer(_token0, to, IERC20Uniswap(_token0).balanceOf(address(this)).sub(reserve0));
+        _safeTransfer(_token1, to, IERC20Uniswap(_token1).balanceOf(address(this)).sub(reserve1));
     }
 
     // force reserves to match balances
     function sync() external lock {
-        _update(IERC20Swipeswap(token0).balanceOf(address(this)), IERC20Swipeswap(token1).balanceOf(address(this)), reserve0, reserve1);
+        _update(IERC20Uniswap(token0).balanceOf(address(this)), IERC20Uniswap(token1).balanceOf(address(this)), reserve0, reserve1);
     }
 }

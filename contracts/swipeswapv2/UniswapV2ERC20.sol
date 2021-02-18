@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: GPL-3.0
 
 pragma solidity =0.6.12;
 
 import './libraries/SafeMath.sol';
 
-contract SwipeswapV2ERC20 {
-    using SafeMathSwipeswap for uint;
+contract UniswapV2ERC20 {
+    using SafeMathUniswap for uint;
 
     string public constant name = 'SwipeSwap LP Token';
     string public constant symbol = 'SLP';

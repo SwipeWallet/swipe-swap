@@ -40,7 +40,7 @@ module.exports = {
     // only: [],
     // except: []
   },
-  defaultNetwork: "hardhat",
+  defaultNetwork: "ropsten",
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/

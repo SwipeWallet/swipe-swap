@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./SwipeToken.sol";
 
 interface IMigratorChef {
     // Perform LP token migration from legacy SwipeswapV2 to SwipeSwap.
@@ -56,7 +55,7 @@ contract MasterChef is Ownable {
         uint256 accSwipePerShare; // Accumulated SWIPEs per share, times 1e12. See below.
     }
     // The SWIPE TOKEN!
-    SwipeToken public swipe;
+    address public swipe;
     // Dev address.
     address public devaddr;
     // Block number when bonus SWIPE period ends.
@@ -84,7 +83,7 @@ contract MasterChef is Ownable {
     );
 
     constructor(
-        SwipeToken _swipe,
+        address _swipe,
         address _devaddr,
         uint256 _swipePerBlock,
         uint256 _startBlock,
@@ -222,8 +221,8 @@ contract MasterChef is Ownable {
             multiplier.mul(swipePerBlock).mul(pool.allocPoint).div(
                 totalAllocPoint
             );
-        swipe.mint(devaddr, swipeReward.div(10));
-        swipe.mint(address(this), swipeReward);
+        safeSwipeTransfer(devaddr, swipeReward.div(10));
+        safeSwipeTransfer(address(this), swipeReward);
         pool.accSwipePerShare = pool.accSwipePerShare.add(
             swipeReward.mul(1e12).div(lpSupply)
         );
@@ -281,11 +280,11 @@ contract MasterChef is Ownable {
 
     // Safe swipe transfer function, just in case if rounding error causes pool to not have enough SWIPEs.
     function safeSwipeTransfer(address _to, uint256 _amount) internal {
-        uint256 swipeBal = swipe.balanceOf(address(this));
+        uint256 swipeBal = IERC20(swipe).balanceOf(address(this));
         if (_amount > swipeBal) {
-            swipe.transfer(_to, swipeBal);
+            IERC20(swipe).transfer(_to, swipeBal);
         } else {
-            swipe.transfer(_to, _amount);
+            IERC20(swipe).transfer(_to, _amount);
         }
     }
 
