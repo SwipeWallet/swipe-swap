@@ -4,10 +4,10 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./swipeswapv2/interfaces/IUniswapV2Pair.sol";
-import "./swipeswapv2/interfaces/IUniswapV2Router01.sol";
-import "./swipeswapv2/interfaces/IUniswapV2Factory.sol";
-import "./swipeswapv2/libraries/UniswapV2Library.sol";
+import "./uniswapv2/interfaces/IUniswapV2Pair.sol";
+import "./uniswapv2/interfaces/IUniswapV2Router01.sol";
+import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
+import "./uniswapv2/libraries/UniswapV2Library.sol";
 
 // SwipeRoll helps your migrate your existing Swipeswap LP tokens to SwipeSwap LP ones
 contract SwipeRoll {

@@ -3,8 +3,8 @@ let path = require("path");
 const { ethers } = require("hardhat");
 const WETH = require("../artifacts/contracts/mocks/WETH.sol/WETH9.json")
 const ERC20Mock = require("../artifacts/contracts/mocks/ERC20Mock.sol/ERC20Mock.json")
-const FACTORY = require("../artifacts/contracts/swipeswapv2/UniswapV2Factory.sol/UniswapV2Factory.json")
-const ROUTER = require("../artifacts/contracts/swipeswapv2/UniswapV2Router02.sol/UniswapV2Router02.json")
+const FACTORY = require("../artifacts/contracts/uniswapv2/UniswapV2Factory.sol/UniswapV2Factory.json")
+const ROUTER = require("../artifacts/contracts/uniswapv2/UniswapV2Router02.sol/UniswapV2Router02.json")
 
 let FACTORY_ADDRESS;
 let ROUTER_ADDRESS;

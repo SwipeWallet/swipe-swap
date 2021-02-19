@@ -4,9 +4,9 @@ pragma solidity 0.6.12;
 import "./libraries/SafeMath.sol";
 import "./libraries/SafeERC20.sol";
 
-import "./swipeswapv2/interfaces/IUniswapV2ERC20.sol";
-import "./swipeswapv2/interfaces/IUniswapV2Pair.sol";
-import "./swipeswapv2/interfaces/IUniswapV2Factory.sol";
+import "./uniswapv2/interfaces/IUniswapV2ERC20.sol";
+import "./uniswapv2/interfaces/IUniswapV2Pair.sol";
+import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 import "./Ownable.sol";
 
