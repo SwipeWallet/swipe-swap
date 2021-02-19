@@ -1,5 +1,5 @@
 {
-  "name": "@swipeswap/core",
+  "name": "@swipewallet/swipe-swap",
   "version": "1.4.1",
   "license": "MIT",
   "description": "🎛 Core contracts for the SwipeSwap protocol",
@@ -9,13 +9,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/swipeswap/swipeswap.git"
+    "url": "git+https://github.com/SwipeWallet/swipe-swap"
   },
   "author": "",
   "bugs": {
-    "url": "https://github.com/swipeswap/swipeswap/issues"
+    "url": "https://github.com/SwipeWallet/swipe-swap/issues"
   },
-  "homepage": "https://github.com/swipeswap/swipeswap#readme",
+  "homepage": "https://github.com/SwipeWallet/swipe-swap#readme",
   "keywords": [
     "uniswap",
     "sushiswap",
