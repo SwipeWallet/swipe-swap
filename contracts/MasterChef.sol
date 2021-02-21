@@ -222,7 +222,6 @@ contract MasterChef is Ownable {
                 totalAllocPoint
             );
         safeSwipeTransfer(devaddr, swipeReward.div(10));
-        safeSwipeTransfer(address(this), swipeReward);
         pool.accSwipePerShare = pool.accSwipePerShare.add(
             swipeReward.mul(1e12).div(lpSupply)
         );
