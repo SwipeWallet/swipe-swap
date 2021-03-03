@@ -23,7 +23,7 @@ yarn test
 ### Single files
 
 ```sh
-yarn test test/MasterChef.test.js
+yarn test test/SwipeSwap.test.js
 ```
 
 Mocha & Chai with Waffle matchers (these are really useful).

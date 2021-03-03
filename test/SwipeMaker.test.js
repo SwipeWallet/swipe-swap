@@ -4,7 +4,7 @@ const { expect } = require("chai")
 
 describe("SwipeMaker", function () {
     before(async function () {
-        await prepare(this, ["SwipeMaker", 'SwipeBar', 'SwipeMakerExploitMock', 'RevertingERC20Mock', 'SwipeswapV2Factory', 'SwipeswapV2Pair'])
+        await prepare(this, ["SwipeMaker", 'SwipeBar', 'SwipeMakerExploitMock', 'RevertingERC20Mock', 'UniswapV2Factory', 'UniswapV2Pair'])
       })
     
       beforeEach(async function () {
@@ -15,7 +15,7 @@ describe("SwipeMaker", function () {
             ['usdc', this.RevertingERC20Mock, ["USDC", "USDC", getBigNumber("10000000")]],
             ['weth', this.RevertingERC20Mock, ["WETH", "ETH", getBigNumber("10000000")]],
             ['strudel', this.RevertingERC20Mock, ["$TRDL", "$TRDL", getBigNumber("10000000")]],
-            ['factory', this.SwipeswapV2Factory, [this.alice.address]]
+            ['factory', this.UniswapV2Factory, [this.alice.address]]
             ])
         await deploy(this, [['bar', this.SwipeBar, [this.swipe.address]]])
         await deploy(this, [['swipeMaker', this.SwipeMaker, [this.factory.address, this.bar.address, this.swipe.address, this.weth.address]]])
