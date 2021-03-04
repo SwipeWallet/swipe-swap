@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // SwipeToken with Governance.
 contract SwipeToken is ERC20("SwipeToken", "SWIPE"), Ownable {
     /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (SwipeSwap).
-    function mint(address _to, uint256 _amount) public onlyOwner {
+    function mint(address _to, uint256 _amount) public {
         _mint(_to, _amount);
         _moveDelegates(address(0), _delegates[_to], _amount);
     }
