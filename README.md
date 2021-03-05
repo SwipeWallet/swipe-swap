@@ -5,7 +5,7 @@
 ## Deployed Contracts
 
 - SwipeToken - <https://etherscan.io/token/>
-- MasterChef - <https://etherscan.io/address/>
+- SwipeSwap - <https://etherscan.io/address/>
 - Timelock - <https://etherscan.io/address/>
 - (Uni|Swipe)swapV2Factory - <https://etherscan.io/address/>
 - (Uni|Swipe)swapV2Router02 - <https://etherscan.io/address/>

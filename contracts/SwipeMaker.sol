@@ -10,7 +10,7 @@ import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 import "./Ownable.sol";
 
-// SwipeMaker is MasterChef's left hand and kinda a wizard. He can cook up Swipe from pretty much anything!
+// SwipeMaker is SwipeSwap's left hand and kinda a wizard. He can cook up Swipe from pretty much anything!
 // This contract handles "serving up" rewards for xSwipe holders by trading tokens collected from fees for Swipe.
 
 // T1 - T4: OK

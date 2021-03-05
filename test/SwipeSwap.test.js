@@ -2,16 +2,17 @@ const { ethers } = require("hardhat")
 const { expect } = require("chai")
 const { time } = require("./utilities")
 
-describe("MasterChef", function () {
+describe("SwipeSwap", function () {
   before(async function () {
     this.signers = await ethers.getSigners()
-    this.alice = this.signers[0]
-    this.bob = this.signers[1]
-    this.carol = this.signers[2]
-    this.dev = this.signers[3]
-    this.minter = this.signers[4]
+    this.swipeOwner = this.signers[0]
+    this.alice = this.signers[1]
+    this.bob = this.signers[2]
+    this.carol = this.signers[3]
+    this.dev = this.signers[4]
+    this.minter = this.signers[5]
 
-    this.MasterChef = await ethers.getContractFactory("MasterChef")
+    this.SwipeSwap = await ethers.getContractFactory("SwipeSwap")
     this.SwipeToken = await ethers.getContractFactory("SwipeToken")
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
   })
@@ -19,10 +20,13 @@ describe("MasterChef", function () {
   beforeEach(async function () {
     this.swipe = await this.SwipeToken.deploy()
     await this.swipe.deployed()
+    console.log("swipe owner: ", await this.swipe.owner())
+    // console.log("signers: ", this.signers)
+    // this.signers.map((sign) => console.log(sign.address))
   })
 
   it("should set correct state variables", async function () {
-    this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "1000", "0", "1000")
+    this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "1000", "0", "1000")
     await this.chef.deployed()
 
     await this.swipe.transferOwnership(this.chef.address)
@@ -37,7 +41,7 @@ describe("MasterChef", function () {
   })
 
   it("should allow dev and only dev to update dev", async function () {
-    this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "1000", "0", "1000")
+    this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "1000", "0", "1000")
     await this.chef.deployed()
 
     expect(await this.chef.devaddr()).to.equal(this.dev.address)
@@ -74,7 +78,7 @@ describe("MasterChef", function () {
 
     it("should allow emergency withdraw", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "100", "1000")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "100", "1000")
       await this.chef.deployed()
 
       await this.chef.add("100", this.lp.address, true)
@@ -92,8 +96,10 @@ describe("MasterChef", function () {
 
     it("should give out SWIPEs only after farming time", async function () {
       // 100 per block farming rate starting at block 100 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "100", "1000")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "100", "1000")
       await this.chef.deployed()
+
+      this.swipe.transfer(this.chef.address, "5000")
 
       await this.swipe.transferOwnership(this.chef.address)
 
@@ -121,40 +127,47 @@ describe("MasterChef", function () {
       await time.advanceBlockTo("104")
       await this.chef.connect(this.bob).deposit(0, "0", { from: this.bob.address }) // block 105
 
-      expect(await this.swipe.balanceOf(this.bob.address)).to.equal("5000")
+      expect(await this.swipe.balanceOf(this.bob.address)).to.equal("4500")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("500")
-      expect(await this.swipe.totalSupply()).to.equal("5500")
+      expect(await this.swipe.totalSupply()).to.equal("300000000000000000000000000")
     })
 
     it("should not distribute SWIPEs if no one deposit", async function () {
       // 100 per block farming rate starting at block 200 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "200", "1000")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "200", "1000")
       await this.chef.deployed()
+
+      this.swipe.transfer(this.chef.address, "10000")
+
       await this.swipe.transferOwnership(this.chef.address)
       await this.chef.add("100", this.lp.address, true)
       await this.lp.connect(this.bob).approve(this.chef.address, "1000", { from: this.bob.address })
       await time.advanceBlockTo("199")
-      expect(await this.swipe.totalSupply()).to.equal("0")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("10000")
       await time.advanceBlockTo("204")
-      expect(await this.swipe.totalSupply()).to.equal("0")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("10000")
       await time.advanceBlockTo("209")
       await this.chef.connect(this.bob).deposit(0, "10", { from: this.bob.address }) // block 210
-      expect(await this.swipe.totalSupply()).to.equal("0")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("10000")
       expect(await this.swipe.balanceOf(this.bob.address)).to.equal("0")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("0")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("990")
       await time.advanceBlockTo("219")
       await this.chef.connect(this.bob).withdraw(0, "10", { from: this.bob.address }) // block 220
-      expect(await this.swipe.totalSupply()).to.equal("11000")
-      expect(await this.swipe.balanceOf(this.bob.address)).to.equal("10000")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("0")
+      expect(await this.swipe.balanceOf(this.bob.address)).to.equal("9000")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("1000")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
     })
 
     it("should distribute SWIPEs properly for each staker", async function () {
       // 100 per block farming rate starting at block 300 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "300", "1000")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "300", "1000")
       await this.chef.deployed()
+
+      // Transfer 10,000 Swipe to SwipeSwap
+      this.swipe.transfer(this.chef.address, "100000")
+
       await this.swipe.transferOwnership(this.chef.address)
       await this.chef.add("100", this.lp.address, true)
       await this.lp.connect(this.alice).approve(this.chef.address, "1000", {
@@ -177,24 +190,24 @@ describe("MasterChef", function () {
       await this.chef.connect(this.carol).deposit(0, "30", { from: this.carol.address })
       // Alice deposits 10 more LPs at block 320. At this point:
       //   Alice should have: 4*1000 + 4*1/3*1000 + 2*1/6*1000 = 5666
-      //   MasterChef should have the remaining: 10000 - 5666 = 4334
+      //   SwipeSwap should have the remaining: 10000 - 5666 = 4334
       await time.advanceBlockTo("319")
       await this.chef.connect(this.alice).deposit(0, "10", { from: this.alice.address })
-      expect(await this.swipe.totalSupply()).to.equal("11000")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("93334")
       expect(await this.swipe.balanceOf(this.alice.address)).to.equal("5666")
       expect(await this.swipe.balanceOf(this.bob.address)).to.equal("0")
       expect(await this.swipe.balanceOf(this.carol.address)).to.equal("0")
-      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("4334")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("93334")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("1000")
       // Bob withdraws 5 LPs at block 330. At this point:
       //   Bob should have: 4*2/3*1000 + 2*2/6*1000 + 10*2/7*1000 = 6190
       await time.advanceBlockTo("329")
       await this.chef.connect(this.bob).withdraw(0, "5", { from: this.bob.address })
-      expect(await this.swipe.totalSupply()).to.equal("22000")
+      expect(await this.swipe.totalSupply()).to.equal("300000000000000000000000000")
       expect(await this.swipe.balanceOf(this.alice.address)).to.equal("5666")
       expect(await this.swipe.balanceOf(this.bob.address)).to.equal("6190")
       expect(await this.swipe.balanceOf(this.carol.address)).to.equal("0")
-      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("8144")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("86144")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("2000")
       // Alice withdraws 20 LPs at block 340.
       // Bob withdraws 15 LPs at block 350.
@@ -205,15 +218,15 @@ describe("MasterChef", function () {
       await this.chef.connect(this.bob).withdraw(0, "15", { from: this.bob.address })
       await time.advanceBlockTo("359")
       await this.chef.connect(this.carol).withdraw(0, "30", { from: this.carol.address })
-      expect(await this.swipe.totalSupply()).to.equal("55000")
+      expect(await this.swipe.balanceOf(this.chef.address)).to.equal("45001")
       expect(await this.swipe.balanceOf(this.dev.address)).to.equal("5000")
-      // Alice should have: 5666 + 10*2/7*1000 + 10*2/6.5*1000 = 11600
+      // // Alice should have: 5666 + 10*2/7*1000 + 10*2/6.5*1000 = 11600
       expect(await this.swipe.balanceOf(this.alice.address)).to.equal("11600")
-      // Bob should have: 6190 + 10*1.5/6.5 * 1000 + 10*1.5/4.5*1000 = 11831
+      // // Bob should have: 6190 + 10*1.5/6.5 * 1000 + 10*1.5/4.5*1000 = 11831
       expect(await this.swipe.balanceOf(this.bob.address)).to.equal("11831")
-      // Carol should have: 2*3/6*1000 + 10*3/7*1000 + 10*3/6.5*1000 + 10*3/4.5*1000 + 10*1000 = 26568
+      // // Carol should have: 2*3/6*1000 + 10*3/7*1000 + 10*3/6.5*1000 + 10*3/4.5*1000 + 10*1000 = 26568
       expect(await this.swipe.balanceOf(this.carol.address)).to.equal("26568")
-      // All of them should have 1000 LPs back.
+      // // All of them should have 1000 LPs back.
       expect(await this.lp.balanceOf(this.alice.address)).to.equal("1000")
       expect(await this.lp.balanceOf(this.bob.address)).to.equal("1000")
       expect(await this.lp.balanceOf(this.carol.address)).to.equal("1000")
@@ -221,7 +234,7 @@ describe("MasterChef", function () {
 
     it("should give proper SWIPEs allocation to each pool", async function () {
       // 100 per block farming rate starting at block 400 with bonus until block 1000
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "400", "1000")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "400", "1000")
       await this.swipe.transferOwnership(this.chef.address)
       await this.lp.connect(this.alice).approve(this.chef.address, "1000", { from: this.alice.address })
       await this.lp2.connect(this.bob).approve(this.chef.address, "1000", { from: this.bob.address })
@@ -248,7 +261,11 @@ describe("MasterChef", function () {
 
     it("should stop giving bonus SWIPEs after the bonus period ends", async function () {
       // 100 per block farming rate starting at block 500 with bonus until block 600
-      this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "100", "500", "600")
+      this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "100", "500", "600")
+
+      // Transfer 10,000 Swipe to SwipeSwap
+      this.swipe.transfer(this.chef.address, "100000")
+
       await this.swipe.transferOwnership(this.chef.address)
       await this.lp.connect(this.alice).approve(this.chef.address, "1000", { from: this.alice.address })
       await this.chef.add("1", this.lp.address, true)
@@ -262,6 +279,7 @@ describe("MasterChef", function () {
       await this.chef.connect(this.alice).deposit(0, "0", { from: this.alice.address })
       expect(await this.chef.pendingSwipe(0, this.alice.address)).to.equal("0")
       expect(await this.swipe.balanceOf(this.alice.address)).to.equal("10600")
+      expect(await this.swipe.balanceOf(this.dev.address)).to.equal("1060")
     })
   })
 })

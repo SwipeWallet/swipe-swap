@@ -1,10 +1,10 @@
 let fs = require("fs");
 let path = require("path");
 const { ethers } = require("hardhat");
-const MASTERCHEF = require("../artifacts/contracts/MasterChef.sol/MasterChef.json")
+const SWIPESWAP = require("../artifacts/contracts/SwipeSwap.sol/SwipeSwap.json")
 
-let MASTERCHEF_ADDRESS;
-let SXP_ADDRESS = "";
+let SWIPESWAP_ADDRESS;
+let SXP_ADDRESS = "0xd57022d5cb065505093e2c4bbf7d683d2335ab6a";
 
 const loadJsonFile = require('load-json-file');
 let keys = loadJsonFile.sync('./keys.json');
@@ -57,13 +57,13 @@ async function deploy() {
   let factory = null, ins = null, tx = null;
 
   factory = new ethers.ContractFactory(
-    MASTERCHEF.abi,
-    MASTERCHEF.bytecode,
+    SWIPESWAP.abi,
+    SWIPESWAP.bytecode,
     walletWithProvider
   )
-  ins = await factory.deploy(SXP_ADDRESS, deployer, '10000000000000000000', 9686100, 9730900, ETHER_SEND_CONFIG)
+  ins = await factory.deploy(SXP_ADDRESS, deployer, '1000000000000000000', 9759275, 9859275, ETHER_SEND_CONFIG)
   await waitForMint(ins.deployTransaction.hash)
-  MASTERCHEF_ADDRESS = ins.address
+  SWIPESWAP_ADDRESS = ins.address
 
 }
 
@@ -71,7 +71,7 @@ async function main() {
     console.log('deploy...')
     await deploy()
     console.log(`
-    MASTERCHEF_ADDRESS = ${MASTERCHEF_ADDRESS}
+    SWIPESWAP_ADDRESS = ${SWIPESWAP_ADDRESS}
   `)
 }
 

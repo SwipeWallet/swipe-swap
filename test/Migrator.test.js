@@ -9,11 +9,11 @@ describe("Migrator", function () {
     this.dev = this.signers[2]
     this.minter = this.signers[3]
 
-    this.SwipeswapV2Factory = await ethers.getContractFactory("SwipeswapV2Factory")
-    this.SwipeswapV2Pair = await ethers.getContractFactory("SwipeswapV2Pair")
+    this.SwipeswapV2Factory = await ethers.getContractFactory("UniswapV2Factory")
+    this.SwipeswapV2Pair = await ethers.getContractFactory("UniswapV2Pair")
     this.ERC20Mock = await ethers.getContractFactory("ERC20Mock", this.minter)
     this.SwipeToken = await ethers.getContractFactory("SwipeToken")
-    this.MasterChef = await ethers.getContractFactory("MasterChef")
+    this.SwipeSwap = await ethers.getContractFactory("SwipeSwap")
     this.Migrator = await ethers.getContractFactory("Migrator")
   })
 
@@ -41,7 +41,7 @@ describe("Migrator", function () {
 
     this.lp2 = await this.SwipeswapV2Pair.attach((await pair2.wait()).events[0].args.pair)
 
-    this.chef = await this.MasterChef.deploy(this.swipe.address, this.dev.address, "1000", "0", "100000")
+    this.chef = await this.SwipeSwap.deploy(this.swipe.address, this.dev.address, "1000", "0", "100000")
     await this.chef.deployed()
 
     this.migrator = await this.Migrator.deploy(this.chef.address, this.factory1.address, this.factory2.address, "0")
